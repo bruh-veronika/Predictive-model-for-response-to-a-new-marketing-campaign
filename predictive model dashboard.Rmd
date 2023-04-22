@@ -1,0 +1,61 @@
+---
+title: "Предсказание отклика различных групп респондентов на новую маркетинговую кампанию"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+marketing = read.csv("~/shared/minor2_2022/1-Intro/hw2/marketing_campaign.csv")
+library(dplyr)
+library(ggplot2) 
+marketing = marketing %>% mutate_if(is.character, as.factor)
+marketing$Response = as.factor(marketing$Response)
+marketing$AcceptedCmp = as.factor(marketing$AcceptedCmp)
+marketing = marketing %>% filter(!is.na(Income))
+```
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+### Нашей целевой аудиторией являются: 
+```{r}
+ggplot(marketing) + geom_bar(aes(x = marketing$Response,fill = AcceptedCmp),position = "fill",color = "white", alpha = 0.7,) +
+  scale_fill_discrete(breaks=c(0,1),label=c("Нет","Да"),name = "Ответ на\nпрошлую\nкомпанию") +
+  scale_x_discrete(breaks=c(0,1),label=c("Нет","Да")) + 
+  xlab("Ответ респондента на текущую компанию") +
+  ylab("Доля от общего числа человек(%)") +
+  ggtitle("Распределение респондентов по ответу на\nпредыдущую компанию")+
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme_bw()
+
+```
+
+### Респонденты ответившие на предыдущую компанию 
+```{r}
+valueBox("Положительно",icon = 'fa-thumbs-up',color="success")
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+### Если же ответ респондента на прошлую компанию был отрицательным, нашей целевой аудиторией будут респонденты у которых:
+### Ответ на предыдущую компанию
+```{r}
+valueBox("Отрицательно",icon = 'fa-thumbs-down',color="#EA6A47")
+```
+
+### С последней покупки прошло не больше
+```{r}
+valueBox("45 дней", icon = "fa-clock")
+```
+
+### Доля дохода выделяемая на продукты питания
+```{r}
+valueBox("> 1.5 %",icon = 'fa-dollar')
+```
+
+### Статус
+```{r}
+valueBox("Не в отношениях",icon = 'fa-heart')
+```
